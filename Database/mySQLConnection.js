@@ -1,28 +1,27 @@
 /**
- * Módulo que permite una conexión síncrona con MYSQL.
+ * Módulo que permite una conexión asíncrona con MYSQL.
  * 
- * Ayuda a resolver temas de asincronía y callbacks que hace el código más 
- * dificil de mantener (y me lleva a escribir tonterías).
- * 
+ * Se intentó hacer una conexión síncrona con la base de datos, pero JS es un puto pedo
+ * bajo ese formato.
  */
-var MySql = require('sync-mysql');
- 
+const mysql = require('mysql2/promise');
+
 
 /**
- * Método que genera una conexión síncrona de SQL.
- * @returns objeto de conexión a la base de datos
+ * Método que configura un objeto conexión y lo regresa a quien lo solicite.
  */
-function getConnection(){
-    
-    var connection = new MySql({
-        host: 'localhost',
-        user: 'root',
-        password: '4747819',
-        database: 'ades_test'
-    });
+async function getConnection(){
+  const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "4747819",
+    database: "ades_test",
+    rowsAsArray: true 
+  });
 
-    return connection;
+  return connection;
 }
+
 
 
 module.exports = {getConnection};

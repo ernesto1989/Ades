@@ -1,55 +1,67 @@
-/**
- * Módulo de servicios de escenario.
- * 
- * 1. Valida que las tablas requeridas por el AdEs se encuentren disponibles
- *    a) Tabla de escenarios
- *    b) Tabla de elementos de un escenario (tablas de datos que lo componen)
- * 2. Permite operar sobre un escenario existente
- *    a) Crear uno nuevo a partir de un escenario base
- *    b) Clonar un escenario
- *    c) Crear un escenario desde cero
- *    d) Consultar un escenario
- *    e) Editar un escenario
- *    f) Borrar un escenario
- */
-const db = require('../Database/mySQLConnection');
-const prompt = require('prompt-sync')();
-
-//Query de tala escenarios
-var tablaEsc = 'CREATE TABLE escenarios ( ' +
-    'id_escenario varchar(10) NOT NULL, ' + 
-    'nombre varchar(30) NOT NULL, ' + 
-    'descripcion varchar(100) DEFAULT NULL, ' + 
-    'f_ini datetime, ' + 
-    'f_fin datetime, ' + 
-    'base varchar(10)' + 
-  ')';
+const dbConnection = require("../Database/mySQLConnection");
 
 /**
- * Función que permite validar que las tablas requeridas por el AdEs se encuentran
- * disponibles en la base de datos.
+ * Método getAll. Búsca una lista de escenarios en la tabla 
+ * Escenarios de la base de datos provista.
  * 
- * Valida que existan:
- * 1. Tabla Escenarios
- * 2. Composición_escenarios (por implementar)
+ * @returns una lista de escenarios.
  */
-function validaTablasAdes(){
-    var syncConn = db.getConnection();
-    syncConn.queueQuery(tablaEsc);
-    syncConn.dispose();
+async function getAllEscenarios(){
+
+  let sql = 'SELECT * FROM escenarios';
+  let conn = await dbConnection.getConnection();
+
+  let [rows,fields] = await conn.execute(sql,null);
+
+  console.log(rows);
+  console.log(fields);
+  conn.end();
+  return rows;
 }
 
-function listaEscenariosDisponibles(){
-  var syncConn = db.getConnection();
-    var result = syncConn.query('SELECT * FROM escenarios');
-    syncConn.dispose();
-    console.log("Escenarios disponibles");
-    for(r in result)
-      console.log(result[r]);
-    
-    opt = parseInt(prompt('opcion> '));
-    
+/**
+ * Método que busca un escenario por id
+ * 
+ * @param {*} id el id del escenario a buscar. Por default, busca el base.
+ * @returns el escenario encontrado
+ */
+async function getById(id = 'ESC-BASE'){
+
+  let sql = 'SELECT * FROM escenarios WHERE id_escenario = ?';
+  let conn = await dbConnection.getConnection();
+
+  let params = [id];
+  let [rows,fields] = await conn.execute(sql,params);
+
+  console.log(rows);
+  console.log(fields);
+  conn.end();
+  return rows;
 }
 
 
-module.exports = {validaTablasAdes,listaEscenariosDisponibles};
+async function deleteEscenario(id){
+
+  let estatus = 200;
+  let ar = 0;
+
+  try{
+    let sql = 'DELETE FROM escenarios WHERE id_escenario = ?';
+    let conn = await dbConnection.getConnection();
+    let params = [id];
+    let [rows,fields] = await conn.execute(sql,params);
+    ar = rows.affectedRows;
+    console.log(rows.affectedRows);
+    conn.end();
+  }catch(err){
+    estatus = 500; 
+  }finally{
+    return {
+      "id":id,
+      "estatus":estatus,
+      "affectedRows":ar
+    };
+  }
+}
+
+module.exports = {getAllEscenarios,getById,deleteEscenario};

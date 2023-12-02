@@ -11,87 +11,58 @@
  * 
  * Notas adicionales:
  * 
+ * Ernesto Cantú, 20 Noviembre 2023:
  * Javascript trabaja con asincronía. La verdad es que me da hueva ese pedo
  * así que decidí convertirlo en sincrono. La intención es plantear un diseño
  * estructural de cómo operar el manejador escenarios y no de como se implementa
  * en un lenguaje particular.
  * 
- * Ernesto Cantú, 20 Noviembre 2023
+ * 
+ * Ernesto Cantú, 27 Noviembre 2023:
+ * Intento fallido de hacerlo tipo CLI, procedemos a migrarlo a un esquema web.
+ * Lo crearemos sobre la chingada...
  */
-const prompt = require('prompt-sync')();
-const escService = require('./Services/escenarioService');
+
+
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const router = require("./Controller/router");
+
+console.log("Welcome to AdEs: Data Administrator");
 
 /**
- * Función que imprime el menú principal de la aplicación.
- * Valida que se seleccione en consola solo una opción válida.
- * 
- * @returns la opción seleccionada
+ * Paso 1: Crear el servidor con Express.
  */
-function menuPrincipal(){
-    const prompt = require('prompt-sync')();
-    var opt = 0;
-    do{
-        console.clear();
-        console.log("Welcome to AdEs");
-        console.log("Las opciones disponibles son: ");
-        console.log("1. Consultar un escenario");
-        console.log("2. Crear un nuevo escenario ");
-        console.log("3. Clonar un escenario creado");
-        console.log("4. Salir");
-        
-        opt = parseInt(prompt('opcion> '));
-        if(isNaN(opt)){
-            console.log('NAN')
-            opt = 0;
-        }
-    }while(opt < 1 || opt > 4);
-    return opt;
-}
+const app = express();
+const port = 3000;
 
-/**
- * Función que valida la opción seleccionada por el usuario.
- * Redirecciona a la función que realiza la operación correspondiente.
- * 
- * @param {} option  Opción del menu seleccionada
- * @returns regresa la condición de terminar la aplicación
+
+/** 
+ * Configuración del servidor web.
+ * 1. Cors es una configuración requerida. 
+ *     https://es.wikipedia.org/wiki/Intercambio_de_recursos_de_origen_cruzado#:~:text=El%20intercambio%20de%20recursos%20de,que%20sirvi%C3%B3%20el%20primer%20recurso. 
+ * 2. BodyParser nos permitirá recibir información en un formato llamado JSON
+ *    JavaScript Object Notation.
  */
-function validateOption(option){
-    var exit = 0;
-    switch(option){
-        case 1:
-            console.log("Consultar escenario");
-            escService.listaEscenariosDisponibles();
-            break;
-        case 2:
-            console.log("Crear escenario");
-            break;
-        case 3:
-            console.log("Clonar escenario");
-            break;
-        default:
-            console.clear();
-            console.log("Gracias! Vuelve pronto");
-            exit = 1;
-            break;
-    }
-    return exit;
-}
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 /**
- * Proceso main del sistema.
- * 
- * 1. Se imprime el menú y se espera a ver la opción seleccionada
- * 2. Se valida si el usuario desea salir del escenario
- * 
+ * Paso 2: Crear algunos endpoints básicos para el crud.
+ * Para ver todos los endpoints agregados al momento, consulta el archivo /routes/route.js
  */
-function mainProcess(){
-    var exitCondition = 0;
-    escService.validaTablasAdes();
-    do{
-        var opt = menuPrincipal();
-        exitCondition = validateOption(opt);
-    }while(exitCondition != 1);
-}
+app.use(router);
 
-mainProcess();
+// Primer endpoint que se crea en el app web. Simplemente respode un mensaje cuando haces una petición a la url: http://localhost:3000/
+app.get('/', (req, res) => {
+    res.send('Welcome to AdEs!')
+});
+
+//arranque del server 
+app.listen(port, () => {
+    console.log('AdEs Service started running on : ' + port)
+})
