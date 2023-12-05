@@ -44,7 +44,27 @@ async function getEscenarioById(req,res){
 }
 
 /**
- * Endpoint #03. Borra un escenario por Id.
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+async function insertaEscenario(req,res){
+  try{
+    console.log("Método create Escenarios");
+    
+    let escenario = req.body.escenario; 
+    let estatus = await escService.insertEscenario(escenario);
+
+    res.status(200);
+    res.json(estatus);
+  }catch(error){
+    res.status(500);
+    res.send(error.message);
+  }
+}
+
+/**
+ * Endpoint #04. Borra un escenario por Id.
  * 
  */
 async function deleteEscenarioById(req,res){
@@ -63,4 +83,4 @@ async function deleteEscenarioById(req,res){
 }
 
 
-module.exports = {getAllEscenarios,getEscenarioById,deleteEscenarioById};
+module.exports = {getAllEscenarios,getEscenarioById, insertaEscenario,deleteEscenarioById};

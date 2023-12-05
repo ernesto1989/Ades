@@ -1,5 +1,32 @@
 const dbConnection = require("../Database/mySQLConnection");
 
+let currDate = '';
+let counter = 1;
+
+function generaIdEscenario(){
+  let id = 'E';
+  let d = new Date();
+  const y1 = d.getFullYear().toString().substr(-2);
+  const m1 = String(d.getMonth() + 1).padStart(2, '0');
+  const d1 = String(d.getDate()).padStart(2, '0');
+
+  const fecha = id + d1 + m1 + y1;
+
+  if(currDate == ''){
+    currDate = id + d1 + m1 + y1;
+  }
+
+  //esta validando con min y seg
+  if(currDate !== fecha){
+    currDate = id + d1 + m1 + y1;
+    counter = 1;
+  } 
+
+  let fRet = id + d1 + m1 + y1 + '_' + counter;
+  counter += 1 ;
+  return fRet;
+}
+
 /**
  * Método getAll. Búsca una lista de escenarios en la tabla 
  * Escenarios de la base de datos provista.
@@ -39,7 +66,53 @@ async function getById(id = 'ESC-BASE'){
   return rows;
 }
 
+/**
+ * 
+ * 
+ * @param {*} escenario 
+ * @returns 
+ */
+async function insertEscenario(escenario){
 
+  let estatus = 200;
+  let ar = 0;
+  let id_escenario = '';
+
+  try{
+    let sql = 'INSERT INTO escenarios (id_escenario,nombre,descripcion,f_ini,f_fin,base) VALUES (?,?,?,?,?,?)';
+    let conn = await dbConnection.getConnection();
+    id_escenario = generaIdEscenario();
+    let params = [id_escenario, escenario.nombre, escenario.descripcion, escenario.f_ini, escenario.f_fin, escenario.base];
+    let [rows,fields] = await conn.execute(sql,params);
+    ar = rows.affectedRows;
+    console.log(rows.affectedRows);
+    conn.end();
+  }catch(err){
+    estatus = 500; 
+  }finally{
+    return {
+      "id":id_escenario,
+      "estatus":estatus,
+      "affectedRows":ar
+    };
+  }
+}
+
+
+
+/**
+ * Método que recibe un id y ejecuta el delete de escenarios en la bd
+ * 
+ * @param {*} id el id de escenario a borrar
+ * @returns regresa un objeto Json con:
+ * 
+ * 1. El id del escenario a borrar
+ * 2. El estatus del delete (si algo tronó)
+ * 3. La cantidad de filas borradas
+ * 4. Estatus de la petición 
+ *     a. 200 -> no se lanzó una excepción
+ *     b. 500 -> se lanzó una excepción
+ */
 async function deleteEscenario(id){
 
   let estatus = 200;
@@ -64,4 +137,4 @@ async function deleteEscenario(id){
   }
 }
 
-module.exports = {getAllEscenarios,getById,deleteEscenario};
+module.exports = {getAllEscenarios,getById, insertEscenario,deleteEscenario};
