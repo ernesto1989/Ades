@@ -1,8 +1,25 @@
+/**
+ * Servicio que contiene toda la interacción necesaria con la tabla de Escenarios de la base de datos.
+ * 
+ * Aquí se incluyen los métodos para operar con Escenarios de manera genérica.
+ * 
+ * Pendientes 06/12/2023:
+ * 
+ * 1. ¿Se implementará aquí la llamada a crear tablas de escenarios?
+ */
+
+
 const dbConnection = require("../Database/mySQLConnection");
 
 let currDate = '';
 let counter = 1;
 
+/**
+ * Método que genera un id de escenario en base a la fecha actual y el número
+ * de escenarios generados el día de hoy.
+ * 
+ * @returns un id de escenario generado en automático.
+ */
 function generaIdEscenario(){
   let id = 'E';
   let d = new Date();
@@ -16,7 +33,6 @@ function generaIdEscenario(){
     currDate = id + d1 + m1 + y1;
   }
 
-  //esta validando con min y seg
   if(currDate !== fecha){
     currDate = id + d1 + m1 + y1;
     counter = 1;
@@ -67,10 +83,11 @@ async function getById(id = 'ESC-BASE'){
 }
 
 /**
+ * Método que inserta un nuevo escenario en la base de datos.
+ * Busca primero el nombre del escenario y luego inserta el dato en la BD
  * 
- * 
- * @param {*} escenario 
- * @returns 
+ * @param {*} escenario objeto escenario a guardar
+ * @returns Estatus del objeto almacenado.
  */
 async function insertEscenario(escenario){
 
