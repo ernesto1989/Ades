@@ -4,13 +4,13 @@ const express = require('express');
 const router = express.Router();
 
 //API PARA TABLA ESCENARIOS
-router.get("/api/getEscenarios",escenariosRest.getAllEscenarios);
-router.post("/api/getEscenarioById",escenariosRest.getEscenarioById);
-router.post("/api/insertEscenario",escenariosRest.insertaEscenario); 
-router.delete("/api/deleteEscenarioById",escenariosRest.deleteEscenarioById);
+router.get("/ades/api/getEscenarios",escenariosRest.getAllEscenarios);
+router.post("/ades/api/getEscenarioById",escenariosRest.getEscenarioById);
+router.post("/ades/api/insertEscenario",escenariosRest.insertaEscenario); 
+router.delete("/ades/api/deleteEscenarioById",escenariosRest.deleteEscenarioById);
 
-router.get("/api/getDatasets",datasetsRest.getAll);
-router.post("/api/insertDataset",datasetsRest.insertDataset);
-router.delete("/api/deleteDataset",datasetsRest.deleteDataset);
+router.get("/ades/api/getDatasets",datasetsRest.getAll);
+router.post("/ades/api/insertDataset",datasetsRest.insertDataset);
+router.delete("/ades/api/deleteDataset",datasetsRest.deleteDataset);
 
 module.exports = router;

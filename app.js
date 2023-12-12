@@ -57,12 +57,16 @@ app.use(bodyParser.json());
  */
 app.use(router);
 
+app.get('/', function (req, res) {
+    res.redirect('/ades');
+});
+
 // Primer endpoint que se crea en el app web. Simplemente respode un mensaje cuando haces una petición a la url: http://localhost:3000/
-app.get('/', (req, res) => {
+app.get('/ades', (req, res) => {
     res.send('Welcome to AdEs!')
 });
 
 //arranque del server 
 app.listen(port, () => {
-    console.log('AdEs Service started running on : ' + port)
+    console.log(`AdEs Service running on port ${port}`);
 })
